@@ -1,0 +1,9 @@
+.gradle/
+build/
+.kotlin/
+.idea/
+*.iml
+local.properties
+.DS_Store
+# 에뮬레이터에서 찍은 임시 스크린샷
+/Screenshot_*.png

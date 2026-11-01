@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 디버그 빌드 전용: adb 브로드캐스트로 차량 상태·장소 진입·음성 발화를 주입한다(README "데모 주입" 참고) -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <receiver
+            android:name=".DemoReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="dev.seungmin.goi.DEMO" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

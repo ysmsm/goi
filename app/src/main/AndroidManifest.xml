@@ -58,5 +58,16 @@
         <receiver
             android:name=".ActionReceiver"
             android:exported="false" />
+
+        <!-- Gleo AI 음성 대화: assets/schema.json의 함수 이름이 곧 action이다 -->
+        <receiver
+            android:name=".voice.GleoReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="SET_CARE_MODE" />
+                <action android:name="SET_BABY_SLEEP" />
+                <action android:name="GET_CARE_STATUS" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

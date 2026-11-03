@@ -221,12 +221,24 @@ class CareEngine(context: Context, private val scope: CoroutineScope) {
         voice.listen { text -> handle(VoiceCommand.parse(text), heard = text != null) }
     }
 
-    fun acceptSuggestion() {
+    fun acceptSuggestion(speak: Boolean = true) {
         val s = _state.value.suggestion ?: return
         closeSuggestion()
         if (_state.value.active.isEmpty()) carryFrom = s.placeName
         setMode(s.mode, true)
-        voice.speak("${s.mode.label} 모드 켰어요")
+        if (speak) voice.speak("${s.mode.label} 모드 켰어요")
+    }
+
+    /** Gleo AI가 부른 함수를 실행한다. 답은 Gleo가 Callback을 받아 말하므로 여기서는 말하지 않는다. */
+    fun onGleo(call: GleoCall): GleoReply {
+        val before = _state.value
+        if (call is GleoCall.Command) handle(call.command, heard = true, speak = false)
+        return GleoReply.of(call, before, _state.value, currentTrip(System.currentTimeMillis()))
+    }
+
+    /** 진행 중인 운반을 지금까지의 기록으로 본다. 출발 전이면 null. */
+    private fun currentTrip(now: Long): TripRecord? = trip?.let {
+        TripRecord(it.startedAt, now, CareMode.entries.filter { m -> m in it.modes }, it.events.toList(), it.distanceM, it.from)
     }
 
     fun dismissSuggestion() = closeSuggestion()
@@ -292,22 +304,22 @@ class CareEngine(context: Context, private val scope: CoroutineScope) {
 
     // endregion
 
-    private fun handle(cmd: VoiceCommand, heard: Boolean) {
+    private fun handle(cmd: VoiceCommand, heard: Boolean, speak: Boolean = true) {
         val s = _state.value
         when (cmd) {
-            VoiceCommand.Yes -> if (s.suggestion != null) acceptSuggestion() else unknown(heard)
+            VoiceCommand.Yes -> if (s.suggestion != null) acceptSuggestion(speak) else unknown(heard)
             VoiceCommand.No -> if (s.suggestion != null) dismissSuggestion() else unknown(heard)
             is VoiceCommand.Turn -> when {
                 cmd.mode == null -> {
                     allOff()
-                    voice.speak("모두 껐어요")
+                    if (speak) voice.speak("모두 껐어요")
                 }
-                cmd.on && s.suggestion?.mode == cmd.mode -> acceptSuggestion()
-                else -> setMode(cmd.mode, cmd.on, announce = true)
+                cmd.on && s.suggestion?.mode == cmd.mode -> acceptSuggestion(speak)
+                else -> setMode(cmd.mode, cmd.on, announce = speak)
             }
             is VoiceCommand.Sleep -> {
                 setSleeping(cmd.on)
-                voice.speak(if (cmd.on) "조용히 갈게요" else "수면 모드 껐어요")
+                if (speak) voice.speak(if (cmd.on) "조용히 갈게요" else "수면 모드 껐어요")
             }
             VoiceCommand.Unknown -> unknown(heard)
         }

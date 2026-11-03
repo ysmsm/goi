@@ -38,6 +38,7 @@ release APK는 지금 debug 키로 서명한다. 제출 파일명은 `팀명_고
 | 운반 요약 | 기어 P 도착 시 무사히 왔으면 모드별 축하 문구 3개를 차례로("하나도 안 흘렸어요! ☕", "모양 그대로 도착했어요! 🎂" 등), 흔들림이 있었으면 "파손주의 물건을 옮겼어요"처럼 도착 사실만, 출발 장소·시간·거리, 급제동·급커브·커브 안내·급출발 횟수와 순서. "계속 켜 두기 / 모드 끄기" | Vehicle Gear, 차속 적분 |
 | 하차(망각) 알림 | 도착 후 운전석 문이 열리면 "뒷좌석에 아기가 있어요", "트렁크에 파손주의 물건이 있어요" 등. 트렁크는 모드별로 기억한다(픽업 때 트렁크를 연 모드만, 짐을 먼저 싣고 10분 안에 모드를 켜도 인정). 아기·반려동물은 확인 버튼을 눌러야 닫힌다 | Vehicle Door(ROW_1_LEFT, REAR) |
 | 아기 수면 모드 | "아기 자요"로 켠다. 효과음을 끄고 안내 음성을 짧게, 감지된 일은 신호 대기에서 "수면 중 알림"으로 보여 주고 출발하면 닫는다. 화면은 어둡게. 도착(P)하면 꺼진다 | STT |
+| Gleo AI 음성 대화 | 말하기 버튼 없이 Gleo AI에 말하면("케이크 실었어", "치킨도 실었어", "아기 자요", "지금까지 어때?") Gleo가 고른 함수를 받아 실행하고, 결과를 Callback으로 돌려줘 Gleo가 답한다. 함수는 `SET_CARE_MODE`·`SET_BABY_SLEEP`·`GET_CARE_STATUS` 3개(`app/src/main/assets/schema.json`). 수면 중에는 Gleo도 완료음만 낸다 | Gleo Interface |
 | 챌린지 | 커피 한 방울도 안 흘리기(음료, 급가감속 없이 5번), 케이크 무사 운반, 멀미 없는 드라이브(반려동물, 급커브 없이 30분), 국물 한 방울도 지키기(포장 음식, 급제동 없이 3번), 깨우지 않고 도착(아기, 5번). 운반 기록에서 계산 | 운반 기록 |
 | 백그라운드 | 모드가 켜진 동안 포그라운드 서비스로 리스너를 유지하고, 화면에 없을 때 제안·알림은 System notification으로 | — |
 
@@ -56,6 +57,28 @@ release APK는 지금 debug 키로 서명한다. 제출 파일명은 `팀명_고
 | 주행 중 | G1 켜진 모드 + 상태 한 줄 + 말하기 / G5 수면 | F5 같은 화면 + 안내 한 줄 |
 | 정차 중 | G3 무엇과 함께 가나요?(모드 5개 + 말하기) → G4 활성화된 모드 | 좌측 레일: F1 홈 · F2/F7 모드 설정 · 운반 기록 · F4 픽업 장소 · F6 챌린지 |
 | 이벤트 | G2 모드 제안, F3 운반 요약, A1 하차 알림(popup), G6 수면 중 이벤트 | 같은 화면 |
+
+## Gleo AI 연동
+
+[Gleo Interface 가이드](https://document.pleos.ai/docs/pleos-only/app-integration-guide/guide/core-concepts)를 따른다.
+
+- **App Schema**: `app/src/main/assets/schema.json`. Gleo AI가 부팅·앱 설치 때 읽고, Pleos 검토 승인 후 연동이 켜진다. `version`은 `versionName`과 맞춘다.
+- **Gleo Action**: 세 함수 모두 `component: "service"`라 Gleo가 `sendBroadcast`로 부르고 `GleoReceiver`(`voice/`)가 받는다. 파라미터는 `ACTION_PARAM` extra의 JSON이다. 주행 중 화면을 띄우지 않는다.
+- **Callback**: `ai.pleos.playground.intent.action.APP_ACTION_RESPONSE` 브로드캐스트(`packageName`, `response`). 답은 Gleo가 말하므로 앱 TTS는 겹쳐 말하지 않는다.
+
+| 함수 | 파라미터 | 하는 일 |
+|---|---|---|
+| `SET_CARE_MODE` | `mode`(fragile·food·drink·pet·baby·all), `enabled` | 모드 켜기·끄기·더하기. 제안 중인 모드를 켜면 제안 수락과 같다 |
+| `SET_BABY_SLEEP` | `sleeping` | 수면 모드(아기 모드가 꺼져 있으면 함께 켬) |
+| `GET_CARE_STATUS` | — | 켜진 모드, 민감도, 공조·뒷좌석 목표 온도, 이번 주행의 급제동·급출발·급커브·커브 안내 횟수 |
+
+에뮬레이터에 Gleo AI가 없어도 같은 브로드캐스트로 확인할 수 있다(release 빌드에서도 동작).
+
+```sh
+adb shell "am broadcast -a SET_CARE_MODE -p dev.seungmin.goi --es ACTION_PARAM '{\"mode\":\"food\",\"enabled\":true}'"
+adb shell "am broadcast -a GET_CARE_STATUS -p dev.seungmin.goi --es ACTION_PARAM '{}'"
+adb logcat -s GoiGleo   # 받은 함수와 돌려준 Callback
+```
 
 ## 데모 주입(디버그 빌드)
 
@@ -87,8 +110,8 @@ scripts/drive-sim.sh baby          # 하나만
 
 | 시나리오 | 흐름 |
 |---|---|
-| `cake` | 달콤베이커리 제안 → 트렁크 → 커브 사전 안내 → 급제동 → 치킨 드라이브스루에서 포장 음식 추가(겹침) → 도착 요약 → 하차 알림 |
-| `baby` | 아기 모드 → "아기 자요" → 급제동(효과음 없이 기록) → 신호 대기에서 "수면 중 알림" → 출발하면 닫힘 → 도착 → 확인해야 닫히는 하차 확인 |
+| `cake` | 달콤베이커리 제안 → 트렁크 → 커브 사전 안내 → 급제동 → 치킨 드라이브스루에서 Gleo로 포장 음식 추가(겹침) → Gleo 상태 질문 → 도착 요약 → 하차 알림 |
+| `baby` | 아기 모드 → Gleo로 "아기 자요"·상태 질문 → 급제동(효과음 없이 기록) → 신호 대기에서 "수면 중 알림" → 출발하면 닫힘 → 도착 → 확인해야 닫히는 하차 확인 |
 | `pet` | 반려동물 모드 → 급커브 → 61분 경과 휴식 안내 → 도착 |
 | `coffee` | 드라이브스루 진입 중 음료 모드 제안 → 신호 출발 급출발 → 도착 → 컵홀더 알림 |
 
@@ -101,4 +124,5 @@ scripts/drive-sim.sh baby          # 하나만
 - 챌린지(F6)는 모드별 5개를 운반 기록으로 계산한다. 외부 공유·인증 배지는 넣지 않았다.
 - TTS SDK에 음량 API가 없어 수면 모드의 "안내 음성 작게"는 짧은 문장으로 대신한다.
 - 운반 요약의 도착지 이름(예: "→ 집")은 내비 목적지를 읽지 않아 표시하지 않는다. 출발 장소는 픽업 장소 제안으로 모드를 켰을 때만 보인다.
-- 단위 테스트: `./gradlew testDebugUnitTest`(쏠림 판정, 음성 명령, 모드 합치기, 하차 문구, 챌린지).
+- Gleo AI 연동은 가이드대로 구현했지만 실제 Gleo AI와는 아직 확인하지 않았다(에뮬레이터에 Gleo AI 없음, schema 검토 승인 전). 앱 자체 STT(말하기 버튼)는 Gleo를 쓸 수 없는 경우를 위해 그대로 둔다.
+- 단위 테스트: `./gradlew testDebugUnitTest`(쏠림 판정, 음성 명령, Gleo 함수·Callback, 모드 합치기, 하차 문구, 챌린지).

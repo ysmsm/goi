@@ -33,12 +33,6 @@ N=0
 
 b() { $ADB shell am broadcast -a dev.seungmin.goi.DEMO -p dev.seungmin.goi "$@" >/dev/null; }
 
-# gleo <함수> [JSON]: Gleo AI가 assets/schema.json의 함수를 부르는 것과 같은 브로드캐스트를 보낸다(release에서도 동작)
-gleo() {
-  local param=${2:-'{}'}
-  $ADB shell "am broadcast -a $1 -p dev.seungmin.goi --es ACTION_PARAM '$param'" >/dev/null
-}
-
 # ramp <목표 km/h> <초> [조향각]: 지금 차속에서 목표까지 일정하게 바꾼다
 ramp() {
   local to=$1 secs=$2 steer=${3:-0}
@@ -93,7 +87,7 @@ begin() {
 }
 
 finish() {
-  $ADB logcat -d -s GoiVoice:I GoiEngine:I GoiHvac:I GoiGleo:I | grep -E "speak:|event|zones|saved|GoiGleo" | sed -E 's/^.* (Goi[A-Za-z]+) *: /\1: /' > $DIR/log.txt || true
+  $ADB logcat -d -s GoiVoice:I GoiEngine:I GoiHvac:I | grep -E "speak:|event|zones|saved" | sed -E 's/^.* (Goi[A-Za-z]+): /\1: /' > $DIR/log.txt || true
   echo "  -- 고이가 한 말·이벤트"; sed 's/^/     /' $DIR/log.txt
 }
 
@@ -109,11 +103,9 @@ cake() {
   b --es curve SHARP_R:280; cruise 2;     shot 커브-사전안내
   b --es curve none
   ramp 15 1; ramp 0 3;                    shot 급제동-후-정차
-  # 기획서 5장 5단계: "치킨도 실었어"를 Gleo가 함수 호출로 바꿔 보낸다
-  gleo SET_CARE_MODE '{"mode":"food","enabled":true}'; shot 모드-겹침
-  ramp 40 6; cruise 10
-  gleo GET_CARE_STATUS;                   sleep 0.5   # "지금까지 어때?"
-  cruise 10; ramp 0 6
+  b --es enter seed-chicken;              shot 드라이브스루-제안 2.5
+  b --es say 응;                          shot 모드-겹침
+  ramp 40 6; cruise 20; ramp 0 6
   b --es gear P;                          shot 도착-요약
   b --ez door true;                       shot 하차-알림
   tap_text "확인했어요";                  shot 알림-확인
@@ -125,8 +117,7 @@ baby() {
   begin baby
   b --es say 아기태웠어;                  shot 아기-모드
   b --es gear D; ramp 40 8; cruise 3
-  gleo SET_BABY_SLEEP '{"sleeping":true}'; shot 수면-모드
-  gleo GET_CARE_STATUS                    # "뒷자리 아기 괜찮아?"
+  b --es say 아기자요;                    shot 수면-모드
   ramp 10 1; ramp 0 3;                    shot 신호대기-이벤트
   ramp 30 5;                              shot 출발-자동닫힘
   b --es curve SHARP_L:150; cruise 2; b --es curve none

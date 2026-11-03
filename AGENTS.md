@@ -5,9 +5,9 @@
 
 ## 구조
 
-- `app/src/main/java/dev/seungmin/goi/care/`: 모드·공조 항목 정의(`CareMode`, `HvacItem`), 공통 센서 엔진(`CareEngine`), 쏠림 판정(`MotionDetector`), 챌린지(`Challenge`), 음성 명령 파서, Gleo 함수·Callback(`GleoAction`)
+- `app/src/main/java/dev/seungmin/goi/care/`: 모드·공조 항목 정의(`CareMode`, `HvacItem`), 공통 센서 엔진(`CareEngine`), 쏠림 판정(`MotionDetector`), 챌린지(`Challenge`), 음성 명령 파서
 - `app/src/main/java/dev/seungmin/goi/car/`: Pleos SDK 연동(Vehicle, HVAC 제어, NaviHelper TBT, FusedLocation 근접 알림)
-- `app/src/main/java/dev/seungmin/goi/voice/`: Pleos TextToSpeech·SpeechToText(온디바이스, ko-KR), Gleo AI 호출 수신(`GleoReceiver`). 함수 정의는 `app/src/main/assets/schema.json`
+- `app/src/main/java/dev/seungmin/goi/voice/`: Pleos TextToSpeech·SpeechToText(온디바이스, ko-KR)
 - `app/src/main/java/dev/seungmin/goi/ui/`: Compose 화면. 토큰은 `ui/theme/Theme.kt`
 - `app/src/debug/`: 에뮬레이터 데모용 adb 브로드캐스트 주입기(`DemoReceiver`). release에는 들어가지 않는다
 - `scripts/drive-sim.sh`: 기획서 페르소나 시나리오를 에뮬레이터에서 재현하고 단계별 화면과 음성 로그를 `build/sim/`에 남긴다
@@ -20,5 +20,5 @@
 - 문구는 우리말 어순으로 쓴다. 앱을 주어로 한 문장("고이가 ~")과 명사로 끝나는 제목("무사 운반 성공")을 피한다(표 값·버튼 이름은 예외). 아기·반려동물이 함께 들어가는 자리에는 "싣다/실은 것"을 쓰지 않는다. 안내 문구는 사용자가 할 일 하나만 말하고("‘케이크 옮겨줘’라고 말해 보세요") 그 결과까지 풀어 쓰지 않는다. 화면 제목에는 "지금 켜진 모드" 같은 관형절 대신 "활성화된 모드"처럼 굳은 말을 쓴다. 토스트는 사용자가 한 행동의 결과(켰어요·저장했어요·못 들었어요)에만 쓰고, 앱이 먼저 건네는 권유("외기로 바꿔 보세요")는 음성으로만 한다. 이모지는 무사 운반 요약의 축하 제목(`CareMode.safeTitles`) 끝에만 하나 쓴다.
 - 크기는 Pleos 가이드 px 값을 dp로 쓴다(Connect-S 에뮬레이터 2560x1440, 160dpi). 버튼 높이 96/128, 아이콘 48 그리드.
 - Vehicle SDK 쓰기는 `check*Capabilities`로 WRITE를 확인한 영역에만 한다. 매니페스트에는 실제로 쓰는 퍼미션만 선언한다.
-- 판정 로직(`MotionDetector`, `VoiceCommand`, `GleoAction`, `MergedCare`, `Challenge`, `ForgetAlert`)을 바꾸면 `./gradlew testDebugUnitTest`를 함께 고친다.
+- 판정 로직(`MotionDetector`, `VoiceCommand`, `MergedCare`, `Challenge`, `ForgetAlert`)을 바꾸면 `./gradlew testDebugUnitTest`를 함께 고친다.
 - 화면·엔진 동작을 바꾸면 `scripts/drive-sim.sh -c all`로 시나리오를 다시 돌려 화면과 음성 로그를 확인한다.

@@ -1,0 +1,62 @@
+{
+  "packageName": "dev.seungmin.goi",
+  "appDescription": "An in-car care app that adapts driving feedback, curve warnings, and climate control to fragile items, takeout food, drinks, pets, or a baby on board.",
+  "invokeWord": "고이",
+  "version": "0.1.0",
+  "actionCalls": [
+    {
+      "type": "function",
+      "function": {
+        "name": "SET_CARE_MODE",
+        "description": "Turns a care mode on or off for the cargo or passenger in the car, and adds it to any care modes already on.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": ["fragile", "food", "drink", "pet", "baby", "all"],
+              "description": "The care mode to change: fragile for cakes, plants, or wine, food for takeout meals, drink for beverages or soup, pet for animals, baby for an infant in the back seat, and all for every active mode when turning modes off."
+            },
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether to turn the care mode on or off."
+            }
+          },
+          "required": ["mode", "enabled"]
+        },
+        "component": "service"
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "SET_BABY_SLEEP",
+        "description": "Turns baby sleep mode on or off, which mutes feedback sounds and shortens voice guidance while the baby sleeps.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "sleeping": {
+              "type": "boolean",
+              "description": "Whether the baby is asleep."
+            }
+          },
+          "required": ["sleeping"]
+        },
+        "component": "service"
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "GET_CARE_STATUS",
+        "description": "Reports the active care modes, the back seat climate settings, and the hard braking, hard starts, sharp turns, and curve warnings on the current trip.",
+        "parameters": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        },
+        "component": "service"
+      }
+    }
+  ]
+}

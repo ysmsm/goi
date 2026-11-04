@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pleos drive simulation"
+  short_description: "Reproduce a realistic simulated drive on the Pleos Connect emulator"
+  default_prompt: "Use $pleos-drive-sim to set up a simulated drive on the Pleos emulator."

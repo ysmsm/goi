@@ -10,7 +10,10 @@
 - `app/src/main/java/dev/seungmin/goi/voice/`: Pleos TextToSpeech·SpeechToText(온디바이스, ko-KR)
 - `app/src/main/java/dev/seungmin/goi/ui/`: Compose 화면. 토큰은 `ui/theme/Theme.kt`
 - `app/src/debug/`: 에뮬레이터 데모용 adb 브로드캐스트 주입기(`DemoReceiver`). release에는 들어가지 않는다
-- `scripts/drive-sim.sh`: 기획서 페르소나 시나리오를 에뮬레이터에서 재현하고 단계별 화면과 음성 로그를 `build/sim/`에 남긴다
+- `branding/`: 워드마크 `goi-logo.svg`와 그 생성기 `build_logo.py`(`uv run branding/build_logo.py`). 형태와 색 바꾸는 법은 `branding/README.md`
+- `scripts/drive-sim.sh`: 기획서 페르소나 시나리오를 앱 안 주입값으로 빠르게 재현하고 단계별 화면과 음성 로그를 `build/sim/`에 남긴다
+- `scripts/road-test.sh`: 같은 시나리오를 모의주행(내비 경로 시뮬레이션 + 시스템 차속·조향·GPS + 마이크 음성)으로 돌리고 녹화·확인 결과를 `build/road-test/`에 남긴다
+- `.agents/skills/pleos-drive-sim/`: 모의주행 환경 구성 스킬과 도구(`.claude/skills/`는 링크)
 
 ## 규칙
 
@@ -21,4 +24,4 @@
 - 크기는 Pleos 가이드 px 값을 dp로 쓴다(Connect-S 에뮬레이터 2560x1440, 160dpi). 버튼 높이 96/128, 아이콘 48 그리드.
 - Vehicle SDK 쓰기는 `check*Capabilities`로 WRITE를 확인한 영역에만 한다. 매니페스트에는 실제로 쓰는 퍼미션만 선언한다.
 - 판정 로직(`MotionDetector`, `VoiceCommand`, `MergedCare`, `Challenge`, `ForgetAlert`)을 바꾸면 `./gradlew testDebugUnitTest`를 함께 고친다.
-- 화면·엔진 동작을 바꾸면 `scripts/drive-sim.sh -c all`로 시나리오를 다시 돌려 화면과 음성 로그를 확인한다.
+- 화면·엔진 동작을 바꾸면 `scripts/drive-sim.sh -c all`로 시나리오를 다시 돌려 화면과 음성 로그를 확인한다. 주행 중 동작(차속·주행 규제·근접 알림·음성)을 바꾸면 `scripts/road-test.sh`로 모의주행에서도 확인한다.

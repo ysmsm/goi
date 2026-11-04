@@ -290,6 +290,10 @@ class CareEngine(context: Context, private val scope: CoroutineScope) {
         onVehicle(_state.value.vehicle)
     }
 
+    /** 픽업 장소를 좌표로 등록한다. 같은 id는 바꾼다(모의주행 경로 위에 장소를 둘 때). */
+    fun simulatePlace(place: Place) =
+        updatePlaces(_state.value.places.filterNot { it.id == place.id } + place)
+
     // endregion
 
     private fun handle(cmd: VoiceCommand, heard: Boolean) {

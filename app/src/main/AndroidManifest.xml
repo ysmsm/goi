@@ -40,6 +40,10 @@
             android:launchMode="singleTask"
             android:resizeableActivity="true"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|uiMode|density">
+            <!-- 주행 규제(P 이외)에서도 고이 화면을 띄운다 -->
+            <meta-data
+                android:name="distractionOptimized"
+                android:value="true" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

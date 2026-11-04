@@ -105,7 +105,9 @@ it, GPS moves along, the app can be spoken to and its voice is captured. Scripts
   Optimization in `idling` (0 km/h, not in P) and `moving`; only `parked` (P) is free.
   An activity without `distractionOptimized` meta-data is replaced by "주행 중에는 사용할 수
   없습니다." from the moment the car leaves P, including a stop at a red light. Speed injected
-  only inside the app never shows this.
+  only inside the app never shows this. `<meta-data android:name="distractionOptimized"
+  android:value="true" />` in the activity lifts the block on this `user` build, also for an
+  APK installed with adb.
 - The navigation app ignores the emulator GPS (its NMEA parser rejects the checksums);
   LocationManager and Pleos FusedLocation follow `adb emu geo fix`.
 - Never start `injectAudio` while no guest app is recording: emulator 37.2 crashes

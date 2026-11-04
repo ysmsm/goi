@@ -235,8 +235,8 @@ baby() {
   wait_goi "아기 모드 켰어요" 10; shot 아기-모드
   drive calm
   when_speed 25 90 && { cmd stop; note "신호 대기"; wait_bridge "stop +cmd=  0.0" 40; sleep 2; shot 신호-대기-화면; }
-  if tap_text "말하기"; then say "아기 자요"; else note "주행 규제로 말하기 버튼을 누를 수 없음 → 디버그 주입으로 계속"; b --es say 아기자요; fi
-  wait_goi "조용히 갈게요" 10
+  if tap_text "말하기"; then say "아기 자요"; else note "말하기 버튼을 찾지 못함 → 디버그 주입으로 계속"; b --es say 아기자요; fi
+  wait_goi "조용히 갈게요" 10 || { note "STT가 '아기 자요'를 못 알아들음 → 디버그 주입으로 계속"; b --es say 아기자요; wait_goi "조용히 갈게요" 5; }
   cmd follow
   when_speed 25 90 && { cmd brake 5.5 5; note "수면 중 급제동"; sleep 2; cmd follow; }
   wait_bridge "^arrived" 240

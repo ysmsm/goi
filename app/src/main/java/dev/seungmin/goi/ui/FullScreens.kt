@@ -122,7 +122,7 @@ private fun HomePage(state: CareUiState, engine: CareEngine, onOpenChallenge: ()
                 GoiText("켜진 모드가 없어요", Goi.type.titleL, c.textSecondary)
                 Spacer(Modifier.height(Dimens.gap))
                 GoiText(
-                    "‘케이크 옮겨줘’라고 말해 보세요",
+                    "‘케이크 옮길래’라고 말해 보세요",
                     Goi.type.bodyM, c.textSecondary, maxLines = 3,
                 )
                 Spacer(Modifier.weight(1f))

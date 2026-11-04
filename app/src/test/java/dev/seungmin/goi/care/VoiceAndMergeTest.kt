@@ -15,6 +15,7 @@ class VoiceAndMergeTest {
         assertEquals(VoiceCommand.Turn(CareMode.FOOD, true), VoiceCommand.parse("치킨 모드 추가"))
         assertEquals(VoiceCommand.Turn(CareMode.FRAGILE, false), VoiceCommand.parse("케이크 모드 꺼"))
         assertEquals(VoiceCommand.Turn(CareMode.FRAGILE, true), VoiceCommand.parse("케이크 실었어"))
+        assertEquals(VoiceCommand.Turn(CareMode.FRAGILE, true), VoiceCommand.parse("케이크 옮길래"))
         assertEquals(VoiceCommand.Turn(CareMode.FRAGILE, true), VoiceCommand.parse("케이크 옮겨줘"))
         assertEquals(VoiceCommand.Sleep(true), VoiceCommand.parse("아기 자요"))
         assertEquals(VoiceCommand.Sleep(false), VoiceCommand.parse("아기 깼어"))

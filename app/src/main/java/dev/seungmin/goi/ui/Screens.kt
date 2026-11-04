@@ -116,7 +116,7 @@ private fun DrivingScreen(state: CareUiState, full: Boolean, engine: CareEngine)
         val sub = when {
             state.listening -> "‘치킨 추가’, ‘아기 자요’처럼 말해 보세요"
             state.sleeping -> "효과음 끔 · 안내 음성 짧게"
-            modes.isEmpty() -> "‘케이크 옮겨줘’라고 말해 보세요"
+            modes.isEmpty() -> "‘케이크 옮길래’라고 말해 보세요"
             else -> m?.drivingLine().orEmpty()
         }
         GoiText(sub, Goi.type.bodyL, c.textSecondary, center = true, maxLines = 1)
@@ -226,7 +226,7 @@ private fun TalkTile(listening: Boolean, onClick: () -> Unit, modifier: Modifier
             Spacer(Modifier.height(Dimens.gap))
             GoiText(if (listening) "듣고 있어요" else "말하기", Goi.type.titleM, fg, maxLines = 1)
             Spacer(Modifier.height(4.dp))
-            GoiText("‘케이크 옮겨줘’", Goi.type.bodyM, fg.copy(alpha = 0.7f), maxLines = 1)
+            GoiText("‘케이크 옮길래’", Goi.type.bodyM, fg.copy(alpha = 0.7f), maxLines = 1)
         }
     }
 }

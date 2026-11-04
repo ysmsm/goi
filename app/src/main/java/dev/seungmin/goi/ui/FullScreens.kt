@@ -31,6 +31,7 @@ import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,6 +48,7 @@ import dev.seungmin.goi.care.ChallengeProgress
 import dev.seungmin.goi.care.HvacItem
 import dev.seungmin.goi.care.ModeSettings
 import dev.seungmin.goi.care.Sensitivity
+import dev.seungmin.goi.care.VoiceExample
 import dev.seungmin.goi.data.EventType
 import dev.seungmin.goi.data.Place
 import dev.seungmin.goi.data.TripRecord
@@ -121,8 +123,9 @@ private fun HomePage(state: CareUiState, engine: CareEngine, onOpenChallenge: ()
                 Spacer(Modifier.weight(1f))
                 GoiText("켜진 모드가 없어요", Goi.type.titleL, c.textSecondary)
                 Spacer(Modifier.height(Dimens.gap))
+                val example = remember { VoiceExample.pick(emptySet()) }
                 GoiText(
-                    "‘케이크 옮길래’라고 말해 보세요",
+                    "‘$example’라고 말해 보세요",
                     Goi.type.bodyM, c.textSecondary, maxLines = 3,
                 )
                 Spacer(Modifier.weight(1f))

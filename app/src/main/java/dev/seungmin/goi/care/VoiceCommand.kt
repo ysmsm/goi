@@ -20,7 +20,7 @@ sealed interface VoiceCommand {
         fun parse(raw: String?): VoiceCommand {
             val t = raw?.replace(" ", "")?.trim().orEmpty()
             if (t.isEmpty()) return Unknown
-            val off = listOf("꺼", "끄", "그만", "해제", "중지").any { it in t }
+            val off = listOf("꺼", "끄", "그만", "해제", "중지", "내렸", "내려", "뺐", "먹었").any { it in t }
             if (listOf("자요", "잠들", "재워", "자고있", "잔다", "자").any { t.endsWith(it) || "${it}요" in t } &&
                 listOf("아기", "아이", "애기").any { it in t }
             ) return Sleep(on = !off)

@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import dev.seungmin.goi.care.CareEngine
 import dev.seungmin.goi.care.CareMode
+import dev.seungmin.goi.care.VoiceExample
 import dev.seungmin.goi.care.CareUiState
 import dev.seungmin.goi.care.ForgetAlert
 import dev.seungmin.goi.care.HvacItem
@@ -113,10 +114,12 @@ private fun DrivingScreen(state: CareUiState, full: Boolean, engine: CareEngine)
         }
         GoiText(title, Goi.type.headlineS, if (modes.isEmpty()) c.textSecondary else c.textPrimary, center = true)
         Spacer(Modifier.height(Dimens.gap))
+        // 예시는 말하기를 시작하거나 모드가 바뀔 때만 새로 고른다(읽는 도중에 바뀌지 않게)
+        val example = remember(state.listening, state.active, state.sleeping) { VoiceExample.pick(state.active, state.sleeping) }
         val sub = when {
-            state.listening -> "‘치킨 추가’, ‘아기 자요’처럼 말해 보세요"
+            state.listening -> "‘$example’처럼 말해 보세요"
             state.sleeping -> "효과음 끔 · 안내 음성 짧게"
-            modes.isEmpty() -> "‘케이크 옮길래’라고 말해 보세요"
+            modes.isEmpty() -> "‘$example’라고 말해 보세요"
             else -> m?.drivingLine().orEmpty()
         }
         GoiText(sub, Goi.type.bodyL, c.textSecondary, center = true, maxLines = 1)
@@ -209,7 +212,8 @@ private fun ModePicker(state: CareUiState, engine: CareEngine, onDone: () -> Uni
                     }, Modifier.weight(1f).fillMaxHeight())
                 }
                 if (row == tiles.lastIndex / 2 && pair.size == 1) {
-                    TalkTile(state.listening, engine::talk, Modifier.weight(1f).fillMaxHeight())
+                    val example = remember(state.active) { VoiceExample.pick(state.active) }
+                    TalkTile(state.listening, example, engine::talk, Modifier.weight(1f).fillMaxHeight())
                 }
             }
         }
@@ -217,7 +221,7 @@ private fun ModePicker(state: CareUiState, engine: CareEngine, onDone: () -> Uni
 }
 
 @Composable
-private fun TalkTile(listening: Boolean, onClick: () -> Unit, modifier: Modifier) {
+private fun TalkTile(listening: Boolean, example: String, onClick: () -> Unit, modifier: Modifier) {
     val c = Goi.colors
     Pressable(onClick, modifier, color = if (listening) c.accent else c.buttonFilled, pressedColor = c.buttonFilled.copy(alpha = 0.85f)) {
         val fg = if (listening) c.onAccent else c.onButtonFilled
@@ -226,7 +230,7 @@ private fun TalkTile(listening: Boolean, onClick: () -> Unit, modifier: Modifier
             Spacer(Modifier.height(Dimens.gap))
             GoiText(if (listening) "듣고 있어요" else "말하기", Goi.type.titleM, fg, maxLines = 1)
             Spacer(Modifier.height(4.dp))
-            GoiText("‘케이크 옮길래’", Goi.type.bodyM, fg.copy(alpha = 0.7f), maxLines = 1)
+            GoiText("‘$example’", Goi.type.bodyM, fg.copy(alpha = 0.7f), maxLines = 1)
         }
     }
 }

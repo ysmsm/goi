@@ -20,7 +20,32 @@ class VoiceAndMergeTest {
         assertEquals(VoiceCommand.Sleep(true), VoiceCommand.parse("아기 자요"))
         assertEquals(VoiceCommand.Sleep(false), VoiceCommand.parse("아기 깼어"))
         assertEquals(VoiceCommand.Turn(null, false), VoiceCommand.parse("모두 꺼"))
+        assertEquals(VoiceCommand.Turn(CareMode.FOOD, false), VoiceCommand.parse("치킨 내렸어"))
+        assertEquals(VoiceCommand.Turn(CareMode.FRAGILE, false), VoiceCommand.parse("케이크 뺐어"))
+        assertEquals(VoiceCommand.Turn(CareMode.BABY, false), VoiceCommand.parse("아기 내렸어"))
         assertEquals(VoiceCommand.Unknown, VoiceCommand.parse(null))
+    }
+
+    @Test
+    fun `말하기 예시는 모두 그 모드를 켜는 말로 알아듣는다`() {
+        CareMode.entries.forEach { mode ->
+            (VoiceExample.all(mode) + VoiceExample.all(mode, also = true)).forEach { text ->
+                assertEquals(text, VoiceCommand.Turn(mode, true), VoiceCommand.parse(text))
+            }
+        }
+        assertEquals(VoiceCommand.Sleep(true), VoiceCommand.parse(VoiceExample.SLEEP))
+        assertEquals(VoiceCommand.Sleep(false), VoiceCommand.parse(VoiceExample.WAKE))
+    }
+
+    @Test
+    fun `켜진 모드가 있으면 아직 안 켠 모드를 더하는 예시만 고른다`() {
+        assertTrue(VoiceExample.candidates(emptySet()).none { "도 " in it })
+        val withFood = VoiceExample.candidates(setOf(CareMode.FOOD))
+        assertTrue(withFood.all { "도 " in it })
+        assertTrue(withFood.none { VoiceCommand.parse(it) == VoiceCommand.Turn(CareMode.FOOD, true) })
+        val all = CareMode.entries.toSet()
+        assertEquals(listOf(VoiceExample.SLEEP), VoiceExample.candidates(all))
+        assertEquals(listOf(VoiceExample.WAKE), VoiceExample.candidates(all, sleeping = true))
     }
 
     @Test

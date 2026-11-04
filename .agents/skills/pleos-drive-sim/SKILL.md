@@ -77,8 +77,9 @@ it, GPS moves along, the app can be spoken to and its voice is captured. Scripts
 ## Facts and limits
 
 - The route simulation is hidden: long press the navigation settings button (bottom right of
-  the map) while guiding. Its bar shows progress, not speed. It moves the navigation car at
-  a constant ~60 km/h regardless of turns and limits and never changes VHAL speed, gear,
+  the map) while guiding. Its bar only shows progress: tapping or dragging it changes neither
+  speed nor position. It moves the navigation car at a constant ~60 km/h regardless of turns
+  and limits, with no way to change that speed, and never changes VHAL speed, gear,
   steering or GPS. During it the navigation emits real NaviHelper events: `onTBTInfo` (1 Hz,
   10 m steps), `onDrivingInfo`, `onCautionPointInfo`, `onCurrentRoadSpeedLimit`,
   `onDestinationArrived`. In an `onTBTInfo` list the first distance is from the car, the
@@ -87,6 +88,13 @@ it, GPS moves along, the app can be spoken to and its voice is captured. Scripts
   `NavigationEventListener` (from `ai.pleos.playground.service.cap`), `navi_engine`
   `start/stop_route_simulation`, and optional `GoiNavTrace`. It keeps the navigation within
   `--ahead` metres (40) of the car by tapping 정지/시작; `--no-lock` lets it run ahead.
+- Because the simulation is fixed at 60 km/h, the navigation is paused for about
+  1 − (average car speed / 60) of the drive whatever `--ahead` is (about half of a city drive).
+  `--ahead` only trades how often it pauses against how far the map, NaviHelper TBT distances
+  and the arrival event run ahead of the car. Pause-plus-resume taps per minute, computed from a
+  recorded city drive averaging 26 km/h: 40 m ≈ 8.5, 80 m ≈ 4, 120 m ≈ 2.8. Keep 40 m when the
+  app's timing against TBT distance is under test; a larger value suits recordings that should
+  show a steadier map.
 - Turns: radius 12 m (left/right), 8 m (sharp), 6 m (U-turn), 60 m (keep/ramp); wheel angle =
   ratio × atan(wheelbase / R) (defaults 14.5, 3.0 m: ±204° for a 90° turn), left negative.
   The car reaches √(lateral × R) at the turn, so lateral acceleration v²/R equals the style's value.

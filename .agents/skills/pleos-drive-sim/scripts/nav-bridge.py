@@ -98,7 +98,7 @@ class Bridge:
         self.toggle = None  # (x, y) of the 정지/시작 button
         self.last_tap = 0.0
         self.tap_prog = 0.0
-        self.man = None  # [kind, pos, done]
+        self.mans = []  # maneuvers ahead of the car: [kind, pos, done], by position
         self.limit = 0
         self.loc = None
         self.last_loc_sent = None
@@ -145,7 +145,7 @@ class Bridge:
     def begin(self, t):
         self.started = self.sim_on = True
         self.nav_running, self.arrived = True, False
-        self.last_d, self.prog, self.prog_t, self.car, self.dest, self.man = None, 0.0, t, 0.0, None, None
+        self.last_d, self.prog, self.prog_t, self.car, self.dest, self.mans = None, 0.0, t, 0.0, None, []
 
     def parse(self, line, t):
         if "start_route_simulation" in line:
@@ -178,13 +178,16 @@ class Bridge:
             kind, d = m[1], float(m[2])
             if kind in ("TURN_ARRIVE", "TURN_STRAIGHT", "TURN_UNKNOWN", "TURN_WAY", "TURN_TUNNEL"):
                 return
+            # The navigation runs ahead of the car, so its next maneuver may already be one the
+            # car has not reached yet: keep every maneuver until the car has driven through it.
             pos = self.nav_pos(t) + d
-            cur = self.man
-            if cur and cur[0] == kind and abs(cur[1] - pos) < 60:
-                if not cur[2]:
-                    cur[1] = pos
-            else:
-                self.man = [kind, pos, False]
+            same = next((m for m in self.mans if m[0] == kind and abs(m[1] - pos) < 60), None)
+            if same:
+                if not same[2]:
+                    same[1] = pos
+            elif pos > self.car:
+                self.mans.append([kind, pos, False])
+                self.mans.sort(key=lambda m: m[1])
         elif (m := RE_LIMIT.search(line)):
             self.limit = int(m[1])
         elif (m := RE_LOC.search(line)):
@@ -291,8 +294,10 @@ class Bridge:
                     if d_w < 5 and self.v < 0.3 and not self.wp_reached:
                         self.wp_reached = True
                         print("waypoint reached (send `follow` to drive on)", flush=True)
-                m = self.man
-                if m and not m[2] and (geo := maneuver_geometry(m[0])):
+                self.mans = [m for m in self.mans if not m[2] or m[1] > self.car - 50]
+                for m in self.mans:
+                    if m[2] or not (geo := maneuver_geometry(m[0])):
+                        continue
                     radius, angle, side = geo
                     v_turn = math.sqrt(self.lateral * radius)
                     d_turn = m[1] - self.car
@@ -354,8 +359,8 @@ class Bridge:
         return target, gap, d_dest
 
     def status(self, now, target, gap, d_dest):
-        m = self.man
-        nxt = f"{m[0]}@{m[1] - self.car:.0f}m" if m and not m[2] else "-"
+        m = next((m for m in self.mans if not m[2] and maneuver_geometry(m[0])), None)
+        nxt = f"{m[0]}@{m[1] - self.car:.0f}m" if m else "-"
         phase = self.override["kind"] if self.override else ("turn" if self.turn else ("drive" if self.started and not self.arrived else "idle"))
         rec = {"t": round(now, 2), "phase": phase, "kmh": round(self.v * 3.6, 1), "target_kmh": round(target * 3.6, 1),
                "steer": round(self.steer), "gap_m": round(gap, 1), "nav": "run" if self.nav_running else "pause",

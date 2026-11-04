@@ -196,7 +196,7 @@ private fun ModePicker(state: CareUiState, engine: CareEngine, onDone: () -> Uni
     val tiles = CareMode.displayOrder
     Column(Modifier.fillMaxSize().padding(Dimens.pad), verticalArrangement = Arrangement.spacedBy(Dimens.gapL)) {
         Row(Modifier.fillMaxWidth().height(Dimens.buttonL), verticalAlignment = Alignment.CenterVertically) {
-            GoiText("무엇과 함께 가나요?", Goi.type.titleL, maxLines = 1, modifier = Modifier.weight(1f))
+            GoiText("모드 선택", Goi.type.titleL, maxLines = 1, modifier = Modifier.weight(1f))
             if (state.active.isNotEmpty()) GoiButton("완료", onDone, kind = ButtonKind.Basic)
         }
         tiles.chunked(2).forEachIndexed { row, pair ->

@@ -1,8 +1,9 @@
+<!-- 고이 워드마크(branding/goi-logo.svg)를 108 그리드 가운데에 46dp 너비로 둔다. 배경은 @color/launcher_background -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp" android:height="108dp"
     android:viewportWidth="108" android:viewportHeight="108">
-    <path android:fillColor="#00000000" android:strokeColor="#FFFFFF" android:strokeWidth="7"
-        android:pathData="M54,30a24,24 0,1 1,0 48a24,24 0,1 1,0 -48z" />
-    <path android:fillColor="#FFFFFF"
-        android:pathData="M54,45a9,9 0,1 1,0 18a9,9 0,1 1,0 -18z" />
+    <group android:translateX="31.000" android:translateY="37.053" android:scaleX="0.11972" android:scaleY="0.11972">
+        <path android:fillColor="#131417" android:pathData="M70.5 61.78L248.5 61.78C289.04 61.78 319 94.23 319 138.13C319 182.03 289.04 214.48 248.5 214.48L236.5 214.48C195.96 214.48 166 182.03 166 138.13C166 121.18 170.47 105.94 178.28 93.61L150 93.61L150 146.65L114 182.65L150 218.65L150 235.9C150 263.05 125.82 283.12 93.1 283.12L70.9 283.12C39.81 283.12 16.43 265 14.18 239.9L50.64 239.9C52.88 246.65 60.78 251.29 70.9 251.29L93.1 251.29C105.12 251.29 114 244.75 114 235.9L114 182.65L82.17 214.48L70.5 214.48C29.96 214.48 0 182.03 0 138.13C0 94.23 29.96 61.78 70.5 61.78ZM70.75 93.61C51.17 93.61 36.7 112.53 36.7 138.13C36.7 163.73 51.17 182.65 70.75 182.65L114 182.65L114 93.61ZM236.8 93.61C217.19 93.61 202.7 112.53 202.7 138.13C202.7 163.73 217.19 182.65 236.8 182.65L248.2 182.65C267.81 182.65 282.3 163.73 282.3 138.13C282.3 112.53 267.81 93.61 248.2 93.61ZM345 61.78L381 61.78L381 214.48L345 214.48Z" />
+        <path android:fillColor="#0064FF" android:pathData="M363 0C374.73 0 384.24 9.51 384.24 21.24C384.24 32.97 374.73 42.48 363 42.48C351.27 42.48 341.76 32.97 341.76 21.24C341.76 9.51 351.27 0 363 0Z" />
+    </group>
 </vector>

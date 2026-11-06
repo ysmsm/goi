@@ -89,7 +89,8 @@ fun FullScreen(state: CareUiState, engine: CareEngine) {
             // 머리: 제목 + 필요할 때만 한 줄 설명(Pleos 차량 설정과 같은 구조) + 말하기
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    GoiText(if (page == Page.HOME) "고이" else page.label, Goi.type.titleL, maxLines = 1)
+                    // 홈 제목은 워드마크. x-height가 titleL 한글 높이와 비슷해 보이도록 60dp로 둔다
+                    if (page == Page.HOME) GoiWordmark(Modifier.height(60.dp)) else GoiText(page.label, Goi.type.titleL, maxLines = 1)
                     if (page.description.isNotEmpty()) GoiText(page.description, Goi.type.bodyS, c.textSecondary, maxLines = 2)
                 }
                 Spacer(Modifier.width(Dimens.gapL))

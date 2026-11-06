@@ -11,7 +11,7 @@
 
 ## 색(틴트)
 
-| 부분 | 요소 | 기본값 | 바꾸는 법 |
+| 부분 | 요소 | 기본값 | 변경 방법 |
 |---|---|---|---|
 | 글자 | `#goi-ink`, `.goi-ink` | `currentColor`(단독으로 열면 검정). CSS를 읽지 않는 도구는 `fill="#000000"` | CSS 변수 `--goi-ink` 또는 `color` |
 | i 점 | `#goi-accent`, `.goi-accent` | `#0064FF`(Pleos `informative_positive` light) | CSS 변수 `--goi-accent` |
